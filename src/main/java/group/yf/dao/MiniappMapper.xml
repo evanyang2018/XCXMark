@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zap.miniapp.dao.MiniappMapper">
+    <sql id="Base_Column_List">
+        miniapp.appId,appName, miniapp.logo, qrcode, pic1, pic2,
+        pic3, pic4, pic5, info, classify.name firstClassify, createTime,
+        updateTime, favorNum, company, author, label
+    </sql>
+
+    <sql id="Simple_Column_List">
+        miniapp.appId,appName, miniapp.logo, info, classify.name
+        firstClassify, label
+    </sql>
+
+
+    <insert id="insert" parameterType="com.zap.miniapp.po.Miniapp" useGeneratedKeys="true" keyProperty="userId">
+        insert into miniapp
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">
+                appId,
+            </if>
+            <if test="appName != null">
+                appName,
+            </if>
+            <if test="logo != null">
+                logo,
+            </if>
+            <if test="qrcode != null">
+                qrcode,
+            </if>
+            <if test="pic1 != null">
+                pic1,
+            </if>
+            <if test="pic2 != null">
+                pic2,
+            </if>
+            <if test="pic3 != null">
+                pic3,
+            </if>
+            <if test="pic4 != null">
+                pic4,
+            </if>
+            <if test="pic5 != null">
+                pic5,
+            </if>
+            <if test="info != null">
+                info,
+            </if>
+            <if test="firstClassifyId != null">
+                firstClassifyId,
+            </if>
+            <if test="createTime != null">
+                createTime,
+            </if>
+            <if test="updateTime != null">
+                updateTime,
+            </if>
+            <if test="favorNum != null">
+                favorNum,
+            </if>
+            <if test="company != null">
+                company,
+            </if>
+            <if test="author != null">
+                author,
+            </if>
+            <if test="label != null">
+                label,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null">
+                #{appId,jdbcType=INTEGER},
+            </if>
+            <if test="appName != null">
+                #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="logo != null">
+                #{logo,jdbcType=VARCHAR},
+            </if>
+            <if test="qrcode != null">
+                #{qrcode,jdbcType=VARCHAR},
+            </if>
+            <if test="pic1 != null">
+                #{pic1,jdbcType=VARCHAR},
+            </if>
+            <if test="pic2 != null">
+                #{pic2,jdbcType=VARCHAR},
+            </if>
+            <if test="pic3 != null">
+                #{pic3,jdbcType=VARCHAR},
+            </if>
+            <if test="pic4 != null">
+                #{pic4,jdbcType=VARCHAR},
+            </if>
+            <if test="pic5 != null">
+                #{pic5,jdbcType=VARCHAR},
+            </if>
+            <if test="info != null">
+                #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="firstClassifyId != null">
+                #{firstClassifyId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="favorNum != null">
+                #{favorNum,jdbcType=INTEGER},
+            </if>
+            <if test="company != null">
+                #{company,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="label != null">
+                #{label,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="udpateQrcode" parameterType="com.zap.miniapp.po.Miniapp">
+        update miniapp
+        <set>
+            <if test="updateTime != null">
+                updateTime = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="qrcode != null">
+                qrcode = #{qrcode,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where appId = #{appId,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectByAppId" resultType="com.zap.miniapp.action.vo.MiniappVO">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM miniapp
+        LEFT JOIN classify ON miniapp.firstClassifyId=classify.id
+        WHERE appId=#{appId}
+    </select>
+
+    <select id="selectByName" resultType="com.zap.miniapp.po.Miniapp">
+        SELECT
+        *
+        FROM miniapp
+        WHERE appName=#{appName}
+    </select>
+
+    <select id="selectByCreateTime" resultType="com.zap.miniapp.action.vo.MiniappSimpleVO">
+        SELECT
+        <include refid="Simple_Column_List"></include>
+        FROM miniapp
+        LEFT JOIN classify ON miniapp.firstClassifyId=classify.id
+        WHERE qrcode IS NOT NULL
+        ORDER BY updateTime desc
+        LIMIT 5
+    </select>
+
+    <select id="selectNewByCreateTime" resultType="com.zap.miniapp.action.vo.MiniappSimpleVO">
+        SELECT
+        <include refid="Simple_Column_List"></include>
+        FROM miniapp
+        LEFT JOIN classify ON miniapp.firstClassifyId=classify.id
+        ORDER BY
+        createTime desc
+        LIMIT #{startNo},#{perPageNum}
+    </select>
+
+
+    <select id="selectByRecommend" resultType="com.zap.miniapp.action.vo.MiniappSimpleVO">
+        SELECT
+        <include refid="Simple_Column_List"></include>
+        FROM miniapp
+        INNER JOIN recommend ON recommend.appId=miniapp.appId
+        LEFT JOIN classify ON
+        miniapp.firstClassifyId=classify.id
+        ORDER BY rId
+    </select>
+
+    <select id="selectByCId" resultType="com.zap.miniapp.action.vo.MiniappSimpleVO">
+        SELECT
+        <include refid="Simple_Column_List"></include>
+        FROM miniapp
+        LEFT JOIN classify ON classify.id=miniapp.firstClassifyId
+        WHERE miniapp.firstClassifyId=#{cId}
+        ORDER BY createTime
+        LIMIT #{startNo},#{perPageNum}
+    </select>
+
+    <select id="selectBrowseByUserId" resultType="com.zap.miniapp.action.vo.MiniappSimpleVO">
+        SELECT
+        <include refid="Simple_Column_List"></include>
+        FROM miniapp
+        INNER JOIN favorites ON favorites.appId=miniapp.appId
+        LEFT JOIN classify ON miniapp.firstClassifyId=classify.id
+        WHERE favorites.userId=#{userId}
+        ORDER BY favorites.updateTime desc
+        LIMIT #{startNo},#{perPageNum}
+    </select>
+
+    <select id="selectByKeyword" resultType="com.zap.miniapp.action.vo.MiniappSimpleVO">
+        SELECT
+        <include refid="Simple_Column_List"></include>
+        FROM miniapp
+        LEFT JOIN classify ON miniapp.firstClassifyId=classify.id
+        WHERE appName=#{keyword} OR classify.name=#{keyword}
+        OR label LIKE CONCAT('%',#{keyword},'%')
+        LIMIT #{startNo},#{perPageNum}
+    </select>
+
+</mapper>
